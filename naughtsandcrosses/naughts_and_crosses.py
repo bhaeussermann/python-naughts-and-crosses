@@ -17,8 +17,8 @@ def cellToCharacter(cell):
     else:
         return " "
 
-def run(key_position_lookup, human_player):
-    board = Board(3)
+def run(key_position_lookup, human_player, board_size):
+    board = Board(board_size)
     gameState = \
         GameState(board, HumanPlayer(Player.NAUGHT, key_position_lookup), AiPlayer(Player.CROSS)) if human_player == Player.NAUGHT else \
         GameState(board, AiPlayer(Player.NAUGHT), HumanPlayer(Player.CROSS, key_position_lookup))
@@ -43,18 +43,24 @@ def run(key_position_lookup, human_player):
     else:
         print("It's a tie.")
 
+def prompt(message, valid_options):
+    option = None
+    while option not in valid_options:
+        option = input("%s: %s " % (message, "/".join(valid_options)))
+    return option
+
 
 if __name__ == '__main__':
     print("=== Naughts & Crosses ===\r\n")
-    
-    piece = None
-    while piece not in ['o', 'x']:
-        piece = input("Choose your piece: o/x ")
+    board_size = int(prompt("Choose board size", ["3", "4"]))
+    piece = prompt("Choose your piece", ["o", "x"])
         
-    keys = [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"]]
+    keys = \
+        [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"]] if board_size == 3 else \
+        [["7", "8", "9", "0"], ["u", "i", "o", "p"], ["j", "k", "l", ";"], ["m", ",", ".", "/"]]
     key_position_lookup = getPositionLookup(keys)
     
     print("Type one of the following to place at the corresponding position ('q' to quit):\r\n")
     printBoard(keys, lambda k: k)
     
-    run(key_position_lookup, Player.NAUGHT if piece == 'o' else Player.CROSS)
+    run(key_position_lookup, Player.NAUGHT if piece == 'o' else Player.CROSS, board_size)
